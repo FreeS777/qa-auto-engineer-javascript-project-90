@@ -8,6 +8,6 @@ test('App render', async ({ page }) => {
 
   const password = page.getByRole('textbox', { name: /password/i });
   await expect(password).toBeVisible();
-  const btn = page.getByRole('button', { name: /Sign/i });
+  const btn = page.getByRole('button', { name: /Sign in/i });
   await expect(btn).toBeVisible();
 });
