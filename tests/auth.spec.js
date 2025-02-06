@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
-import LoginPage from './pages/authPage';
+import AuthPage from './pages/AuthPage';
 
 test.beforeEach('Login form', ({ page }) => {
   page.goto('/');
-  const loginPage = new LoginPage(page);
-  loginPage.login();
+  const authPage = new AuthPage(page);
+  authPage.login();
 });
 
 test('registration successful', async ({ page }) => {
@@ -17,6 +17,6 @@ test('registration successful', async ({ page }) => {
 
 test('logout successful', async ({ page }) => {
   await page.getByRole('button', { name: 'Profile' }).click();
-  await page.locator('.MuiButtonBase-root.logout').click();
+  await page.getByRole('menuitem', { name: 'Logout' }).click();
   await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
 });
