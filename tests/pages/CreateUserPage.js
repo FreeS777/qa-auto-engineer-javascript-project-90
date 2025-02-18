@@ -1,28 +1,40 @@
 import { expect } from '@playwright/test';
-import BasePage from './BasePage';
+import { Inputs } from '../components/Inputs';
+import { BasePage } from './BasePage';
+import { BUTTONS } from '../data/buttonSelectors';
 
-export default class CreateUserPage extends BasePage {
+export class CreateUserPage extends BasePage {
   constructor(page) {
     super(page);
+    this.inputs = new Inputs(page);
+    this.alert = this.page.getByText(
+      'The form is not valid. Please check for errors',
+    );
+  }
+  async checkCreateUserForm() {
+    await this.clickButton(BUTTONS.CREATE);
+    await expect(this.form).toBeVisible();
+    await expect(this.inputs.emailInput).toBeVisible();
+    await expect(this.inputs.firstNameInput).toBeVisible();
+    await expect(this.inputs.lastNameInput).toBeVisible();
+    await this.checkButtonVisible(BUTTONS.SAVE);
+    await this.checkButtonDisabled(BUTTONS.SAVE);
   }
   async createUser(userRegData) {
     const { email, firstName, lastName } = userRegData;
-    await this.emailInput.type(email);
-    await this.firstNameInput.type(firstName);
-    await this.lastNameInput.type(lastName);
+    await this.inputs.fillEmail(email);
+    await this.inputs.fillFirstName(firstName);
+    await this.inputs.fillLastName(lastName);
+    await this.clickButton(BUTTONS.SAVE);
   }
-  async clickCreateUserBtn() {
-    await this.createUserBtn.click();
+  async createUserWithIncorrectEmail(userRegData) {
+    const { firstName, lastName } = userRegData;
+    await this.inputs.fillEmail('qwerty');
+    await this.inputs.fillFirstName(firstName);
+    await this.inputs.fillLastName(lastName);
+    await this.clickButton(BUTTONS.SAVE);
   }
-  async clickSaveUserBtn() {
-    await this.saveUserBtn.click();
-  }
-  async checkCreateUserPageIsCorrect() {
-    await expect(this.page).toHaveURL(/users\/create/);
-    await expect(this.emailInput).toBeVisible();
-    await expect(this.firstNameInput).toBeVisible();
-    await expect(this.lastNameInput).toBeVisible();
-    await expect(this.saveUserBtn).toBeVisible();
-    await expect(this.saveUserBtn).toBeDisabled();
+  async checkInvalidFormAlert() {
+    await expect(this.alert).toBeVisible();
   }
 }

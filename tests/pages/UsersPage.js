@@ -1,8 +1,7 @@
 import { expect } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-import AuthPage from './AuthPage';
-
-export default class UsersPage extends AuthPage {
+export class UsersPage extends BasePage {
   constructor(page) {
     super(page);
     this.usersList = this.page.locator('table');
@@ -15,33 +14,31 @@ export default class UsersPage extends AuthPage {
     await expect(this.usersList).toBeVisible();
   }
 
-  async checkUserEditFormIsVisible() {
-    await expect(this.emailInput).toBeVisible();
-    await expect(this.firstNameInput).toBeVisible();
-    await expect(this.lastNameInput).toBeVisible();
-    await expect(this.saveUserBtn).toBeVisible();
-    await expect(this.deleteUserBtn).toBeVisible();
-  }
-
-  async checkAllEmailsAreVisible() {
+  async checkEmailsVisibility() {
     const emails = await this.emailCell.all();
     for (const email of emails) {
       await expect(email).toBeVisible();
     }
   }
 
-  async checkAllFirstNamesAreVisible() {
+  async checkFirstNamesVisibility() {
     const firstNames = await this.firstNameCell.all();
     for (const name of firstNames) {
       await expect(name).toBeVisible();
     }
   }
 
-  async checkAllLastNamesAreVisible() {
+  async checkLastNamesVisibility() {
     const lastNames = await this.lastNameCell.all();
     for (const name of lastNames) {
       await expect(name).toBeVisible();
     }
+  }
+
+  async checkUsersData() {
+    await this.checkEmailsVisibility();
+    await this.checkFirstNamesVisibility();
+    await this.checkLastNamesVisibility();
   }
 
   async checkUserCreatedSuccessfully(userRegData) {
@@ -69,17 +66,27 @@ export default class UsersPage extends AuthPage {
     await expect(deletedUserEmail).not.toBeVisible();
   }
 
+  async selectUser(count = 1) {
+    const countOfRows = await this.rows.count();
+    if (count < 1 || count > countOfRows) {
+      throw new Error('Invalid user count');
+    }
+    await this.rowCheckBox.nth(count - 1).click();
+  }
+
   async deleteTwoUsers() {
-    await this.rowCheckBox.first().click();
-    await this.rowCheckBox.last().click();
+    await this.selectUser(1);
+    await this.selectUser(2);
     await this.clickDeleteUser();
   }
 
-  async checkAllUsersChecked() {
-    const checkedCheckboxes = await this.rowCheckBox
-      .filter({ checked: true })
+  async checkAllUsersSelected() {
+    const checkedCheckboxes = await this.page
+      .getByRole('checkbox', { checked: true })
       .count();
-    expect(checkedCheckboxes).toBe(2);
+    expect(await this.itemsSelected.innerText()).toContain(
+      checkedCheckboxes.toString(),
+    );
   }
 
   async deleteAllUsers() {
