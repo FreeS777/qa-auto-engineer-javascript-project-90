@@ -3,7 +3,6 @@ import { Application } from '../pages/Application';
 
 const test = base.extend({
   app: async ({ page }, use) => {
-    // const newPage = await context.newPage();
     const app = new Application(page);
 
     await app.authPage.open();

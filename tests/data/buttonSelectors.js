@@ -11,4 +11,6 @@ export const BUTTONS = {
   SAVE: { role: 'button', name: 'Save' },
   DELETE: { role: 'button', name: 'Delete' },
   SHOW: { role: 'link', name: 'Show' },
+  PROFILE: { role: 'button', name: 'Profile' },
+  LOGOUT: { role: 'menuitem', name: 'Logout' },
 };
