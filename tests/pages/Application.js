@@ -5,6 +5,7 @@ import { BasePage } from './BasePage';
 import { BaseDataPage } from './BaseDataPage';
 import { StatusesPage } from './StatusesPage';
 import { LabelsPage } from './LabelsPage';
+import { BaseTasksPage } from './BaseTasksPage';
 
 export class Application extends PageHolder {
   constructor(page) {
@@ -15,5 +16,6 @@ export class Application extends PageHolder {
     this.baseDataPage = new BaseDataPage(page);
     this.statusesPage = new StatusesPage(page);
     this.labelsPage = new LabelsPage(page);
+    this.baseTasksPage = new BaseTasksPage(page);
   }
 }

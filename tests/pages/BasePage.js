@@ -13,27 +13,6 @@ export class BasePage extends PageHolder {
     this.lastNameInput = this.page.getByRole('textbox', { name: 'Last name' });
     this.nameInput = this.page.getByRole('textbox', { name: 'name' });
     this.slugInput = this.page.getByRole('textbox', { name: 'slug' });
-
-    this.draggable = this.page.locator('[data-rfd-draggable-id="5"]');
-
-    this.droppable = this.page.locator('[data-rfd-droppable-id="2"]');
-  }
-
-  async testDragAndDrop() {
-    const box = await this.draggable.boundingBox();
-    const target = await this.droppable.boundingBox();
-    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.mouse.down();
-
-    await this.page.mouse.move(
-      target.x + target.width / 2,
-      target.y + target.height / 2,
-      { steps: 5 },
-    );
-    await this.page.mouse.up();
-    await expect(
-      this.droppable.locator('[data-rfd-draggable-id="5"]'),
-    ).toBeVisible();
   }
 
   async clickButton(item) {
