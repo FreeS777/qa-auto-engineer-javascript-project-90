@@ -21,6 +21,15 @@ export class BaseDataPage extends BasePage {
       name: 'items selected',
     });
   }
+  async getNames() {
+    const labels = await this.nameCell.allTextContents();
+    return labels;
+  }
+
+  async getEmails() {
+    const emails = await this.emailCell.allTextContents();
+    return emails;
+  }
 
   async checkTableIsVisible() {
     await expect(this.table).toBeVisible();

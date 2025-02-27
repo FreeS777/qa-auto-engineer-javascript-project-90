@@ -1,37 +1,41 @@
-import { BasePage } from './BasePage';
+import { BaseDataPage } from './BaseDataPage';
 import { expect } from '@playwright/test';
+import { BUTTONS } from '../data/buttonSelectors';
 
-export class BaseTasksPage extends BasePage {
+export class BaseTasksPage extends BaseDataPage {
   constructor(page) {
     super(page);
+    this.taskTable = this.page.locator('.RaList-content');
+    this.filtres = this.page.locator('.filter-filed');
+    this.titles = this.page.locator('.RaList-content h6');
+    this.taskCells = this.page.locator('.MuiBox-root.css-1xphtog');
+    this.elements = this.page.locator('[data-rfd-draggable-id]');
 
-    this.draggable = this.page.locator('[data-rfd-draggable-id="5"]');
-    this.droppable = this.page.locator('[data-rfd-droppable-id="2"]');
+    this.taskAssigneeInput = this.page.getByLabel('Assignee');
   }
 
-  async dragAndDropCard(taskId = 1, columnId = 1) {
-    const draggable = this.page.locator(`[data-rfd-draggable-id="${taskId}"]`);
-    const droppable = this.page.locator(
-      `[data-rfd-droppable-id="${columnId}"]`,
-    );
-    const task = await draggable.boundingBox();
-    const target = await droppable.boundingBox();
+  async fillSelectOption(label, value) {
+    await this.page.getByLabel(label).click();
+    const options = this.page.locator('ul[role="listbox"] li[role="option"]');
 
-    await this.page.mouse.move(
-      task.x + task.width / 2,
-      task.y + task.height / 2,
-    );
-    await this.page.mouse.down();
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const option = options.locator(`text=${item}`);
+        await option.click();
+      }
+    } else {
+      const option = options.locator(`text=${value}`);
+      await option.click();
+    }
 
-    await this.page.mouse.move(
-      target.x + target.width / 2,
-      target.y + target.height / 2,
-      { steps: 15 },
-    );
-    await this.page.mouse.up();
+    await this.page.keyboard.press('Escape');
+  }
 
-    await expect(
-      droppable.locator(`[data-rfd-draggable-id="${taskId}"]`),
-    ).toBeVisible();
+  async clickEditTask(taskTitle) {
+    const task = this.page
+      .locator('.MuiCard-root')
+      .filter({ hasText: `${taskTitle}` });
+    const editButton = task.getByRole('link', { name: 'Edit' });
+    await editButton.click();
   }
 }

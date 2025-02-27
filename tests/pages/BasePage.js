@@ -14,7 +14,6 @@ export class BasePage extends PageHolder {
     this.nameInput = this.page.getByRole('textbox', { name: 'name' });
     this.slugInput = this.page.getByRole('textbox', { name: 'slug' });
   }
-
   async clickButton(item) {
     await this.page.getByRole(item.role, { name: item.name }).click();
   }
@@ -47,7 +46,6 @@ export class BasePage extends PageHolder {
     for (let i = 0; i < keys.length; i++) {
       await inputs[i].fill(data[keys[i]]);
     }
-    await this.clickButton(BUTTONS.SAVE);
   }
   async checkDataCellsVisibility(cells) {
     const elements = await cells.all();

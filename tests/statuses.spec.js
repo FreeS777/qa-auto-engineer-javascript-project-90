@@ -1,5 +1,4 @@
 import { test } from './fixture/main';
-import { generateStatusData } from './data/generateStatusData';
 import { BUTTONS } from './data/buttonSelectors';
 
 test.describe('Test statuses page', async () => {
@@ -7,65 +6,40 @@ test.describe('Test statuses page', async () => {
     await basePage.clickButton(BUTTONS.STATUSES);
   });
 
-  test('Statuses list is visible', async ({ app: { statusesPage } }) => {
+  test('Check statuses data is visible', async ({ app: { statusesPage } }) => {
     await statusesPage.checkStatusesData();
   });
 
-  test.describe('Create new status page', async () => {
-    test('Check create status page display', async ({
-      app: { statusesPage, basePage },
-    }) => {
-      await basePage.clickButton(BUTTONS.CREATE);
+  test.describe('Check creste status page', async () => {
+    test('Check create new status page', async ({ app: { statusesPage } }) => {
       await statusesPage.checkCreateStatusForm();
     });
-    test('Create new status correctly', async ({
-      app: { statusesPage, basePage },
-    }) => {
-      const statusData = generateStatusData();
-      await basePage.clickButton(BUTTONS.CREATE);
-      await statusesPage.createStatus(statusData);
-      await basePage.clickButton(BUTTONS.STATUSES);
-      await statusesPage.checkStatusCreatedSuccessfully(statusData);
-    });
-  });
-  test.describe('Edit status', async () => {
-    test('Edit status page is visible and correct', async ({
-      app: { statusesPage, baseDataPage, basePage },
-    }) => {
-      await baseDataPage.clickRow();
-      await statusesPage.checkEditStatusForm();
-      await basePage.checkButtonVisible(BUTTONS.SAVE);
-      await basePage.checkButtonDisabled(BUTTONS.SAVE);
-      await basePage.checkButtonVisible(BUTTONS.DELETE);
-      await basePage.checkButtonVisible(BUTTONS.SHOW);
-    });
-    test('Update status data and check success', async ({
-      app: { baseDataPage, basePage, statusesPage },
-    }) => {
-      const statusData = generateStatusData();
-      await baseDataPage.clickRow(4);
-      await statusesPage.createStatus(statusData);
-      await basePage.clickButton(BUTTONS.STATUSES);
-      await statusesPage.checkStatusUpdateSuccessfully(4, statusData);
+    test('Check create new status', async ({ app: { statusesPage } }) => {
+      await statusesPage.checkCreateNewStatus();
     });
   });
 
-  test.describe('Delete statuses', async () => {
-    test('delete status and check success', async ({
-      app: { baseDataPage, basePage, statusesPage },
+  test.describe('Check edit status page', async () => {
+    test('Check edit status page is correct', async ({
+      app: { statusesPage },
     }) => {
-      await baseDataPage.clickRow();
-      await basePage.clickButton(BUTTONS.DELETE);
-      await basePage.clickButton(BUTTONS.STATUSES);
-      await statusesPage.verifyStatusIsDeleted(['Draft', 'draft']);
+      await statusesPage.checkEditStatusPage();
     });
-    test('delete all statuses and check success', async ({
-      app: { baseDataPage, basePage },
+    test('Check update status is correct', async ({
+      app: { statusesPage },
     }) => {
-      await baseDataPage.clickSelectAll();
-      await baseDataPage.allItemsSelectedCorrectly();
-      await basePage.clickButton(BUTTONS.DELETE);
-      await baseDataPage.checkAllItemsDeleted();
+      await statusesPage.checkUpdateStatus();
+    });
+  });
+
+  test.describe('Check delete statuses', async () => {
+    test('Delete status is correct', async ({ app: { statusesPage } }) => {
+      await statusesPage.checkDeleteStatus();
+    });
+    test('Check delete all statuses is correct', async ({
+      app: { statusesPage },
+    }) => {
+      await statusesPage.checkDeleteAllStatuses();
     });
   });
 });

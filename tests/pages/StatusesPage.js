@@ -1,5 +1,6 @@
 import { BUTTONS } from '../data/buttonSelectors';
 import { BaseDataPage } from './BaseDataPage';
+import { generateStatusData } from '../data/generateStatusData';
 
 export class StatusesPage extends BaseDataPage {
   constructor(page) {
@@ -13,13 +14,54 @@ export class StatusesPage extends BaseDataPage {
   }
 
   async checkCreateStatusForm() {
-    await this.checkForm([this.nameInput, this.slugInput]);
-    await this.checkButtonVisible(BUTTONS.SAVE);
-    await this.checkButtonDisabled(BUTTONS.SAVE);
+    await this.clickButton(BUTTONS.CREATE);
+    await Promise.all([
+      this.checkForm([this.nameInput, this.slugInput]),
+      this.checkButtonVisible(BUTTONS.SAVE),
+      this.checkButtonDisabled(BUTTONS.SAVE),
+    ]);
+  }
+  async checkCreateNewStatus() {
+    const statusData = generateStatusData();
+    await this.clickButton(BUTTONS.CREATE);
+    await this.createStatus(statusData);
+    await this.clickButton(BUTTONS.STATUSES);
+    await this.checkStatusCreatedSuccessfully(statusData);
+  }
+  async checkEditStatusPage() {
+    await this.clickRow();
+    await Promise.all([
+      this.checkEditStatusForm(),
+      this.checkButtonVisible(BUTTONS.SAVE),
+      this.checkButtonDisabled(BUTTONS.SAVE),
+      this.checkButtonVisible(BUTTONS.DELETE),
+      this.checkButtonVisible(BUTTONS.SHOW),
+    ]);
+  }
+
+  async checkUpdateStatus() {
+    const statusData = generateStatusData();
+    await this.clickRow(4);
+    await this.createStatus(statusData);
+    await this.clickButton(BUTTONS.STATUSES);
+    await this.checkStatusUpdateSuccessfully(4, statusData);
+  }
+  async checkDeleteStatus() {
+    await this.clickRow();
+    await this.clickButton(BUTTONS.DELETE);
+    await this.clickButton(BUTTONS.STATUSES);
+    await this.verifyStatusIsDeleted(['Draft', 'draft']);
+  }
+  async checkDeleteAllStatuses() {
+    await this.clickSelectAll();
+    await this.allItemsSelectedCorrectly();
+    await this.clickButton(BUTTONS.DELETE);
+    await this.checkAllItemsDeleted();
   }
 
   async createStatus(statusData) {
     await this.fillForm(statusData, [this.nameInput, this.slugInput]);
+    await this.clickButton(BUTTONS.SAVE);
   }
   async checkStatusCreatedSuccessfully(statusData) {
     await this.checkItemCreatedSuccessfully(statusData, {
