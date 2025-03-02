@@ -1,6 +1,5 @@
 import { test } from './fixture/main';
 import { BUTTONS } from './data/buttonSelectors';
-import { expect } from '@playwright/test';
 
 test.describe('Test tasks page', async () => {
   test.beforeEach(async ({ app: { basePage } }) => {
