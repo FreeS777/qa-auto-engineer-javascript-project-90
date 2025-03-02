@@ -2,6 +2,7 @@ import { BaseTasksPage } from './BaseTasksPage';
 import { BUTTONS } from '../data/buttonSelectors';
 import { generateTaskData } from '../data/generateTaskData';
 import { expect } from '@playwright/test';
+import { TaskCard } from '../components/TaskCard';
 
 export class TaskPage extends BaseTasksPage {
   constructor(page) {
@@ -11,6 +12,25 @@ export class TaskPage extends BaseTasksPage {
     this.taskContentInput = this.page.getByRole('textbox', { name: 'Content' });
     this.taskStatusSelect = this.page.getByRole('textbox', { name: 'Status' });
     this.taskLabelSelect = this.page.getByRole('textbox', { name: 'Label' });
+  }
+
+  async getVisibleTasks() {
+    const cards = await this.page.locator('.MuiCard-root').all();
+    const tasks = await Promise.all(
+      cards.map(async (card) => {
+        const taskCard = new TaskCard(card);
+        const desc = await taskCard.getDescription();
+        const title = await taskCard.getTitle();
+        return { title, desc };
+      }),
+    );
+    return tasks;
+  }
+
+  async addFilters(data) {
+    await this.fillSelectOption('Assignee', data.assignee);
+    await this.fillSelectOption('Status', data.status);
+    await this.fillSelectOption('Label', data.label);
   }
 
   async createTask(taskData) {
@@ -99,6 +119,13 @@ export class TaskPage extends BaseTasksPage {
     await this.clickEditTask(taskTitle);
     await this.clickButton(BUTTONS.DELETE);
     await expect(task).not.toBeVisible();
+  }
+
+  async checkTasksFiltered(filtersData, resultData) {
+    await this.addFilters(filtersData);
+    const tasks = await this.getVisibleTasks();
+    expect(tasks.length).toBe(resultData.length);
+    expect(tasks).toEqual(resultData);
   }
 
   async dragAndDropCard(taskId = 1, columnId = 1) {

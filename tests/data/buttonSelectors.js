@@ -10,6 +10,7 @@ export const BUTTONS = {
   THEME_TOGGLE: { role: 'button', name: 'Toggle light/dark mode' },
   SAVE: { role: 'button', name: 'Save' },
   DELETE: { role: 'button', name: 'Delete' },
+  EDIT: { role: 'link', name: 'Edit' },
   SHOW: { role: 'link', name: 'Show' },
   PROFILE: { role: 'button', name: 'Profile' },
   LOGOUT: { role: 'menuitem', name: 'Logout' },
