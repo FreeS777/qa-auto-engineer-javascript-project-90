@@ -1,27 +1,53 @@
 import { test } from './fixture/main';
 import { BUTTONS } from './data/buttonSelectors';
+import { generateTaskInputs } from './data/generateTaskData';
 
 test.describe('Test tasks page', async () => {
   test.beforeEach(async ({ app: { basePage } }) => {
     await basePage.clickButton(BUTTONS.TASKS);
   });
 
-  test('Tasks page is visible', async ({ app: { taskPage } }) => {
+  test('Check tasks page is visible', async ({ app: { taskPage } }) => {
     await taskPage.checkTasksPage();
   });
 
-  test('Create new task', async ({ app: { taskPage } }) => {
-    await taskPage.checkCreateTask();
+  test('Check create new task', async ({ app: { taskPage } }) => {
+    const taskInputsData = generateTaskInputs();
+    const assigneeOptions = {
+      label: 'Assignee',
+      value: 'alice@hotmail.com',
+    };
+    const statusOptions = {
+      label: 'Status',
+      value: 'To Publish',
+    };
+    const labelOptions = {
+      label: 'Label',
+      value: ['critical', 'task'],
+    };
+    await taskPage.checkCreateTask(
+      taskInputsData,
+      assigneeOptions,
+      statusOptions,
+      labelOptions,
+    );
   });
 
-  test('Edit task', async ({ app: { taskPage } }) => {
+  test('Check edit task', async ({ app: { taskPage } }) => {
     const assignee = 'sarah@example.com';
     const status = 'To Be Fixed';
     const label = ['bug', 'task'];
-    await taskPage.checkEditTask('Task 11', assignee, status, label);
+    const taskInputs = generateTaskInputs();
+    await taskPage.checkEditTask(
+      'Task 11',
+      taskInputs,
+      assignee,
+      status,
+      label,
+    );
   });
 
-  test('Delete task', async ({ app: { taskPage } }) => {
+  test('Check delete task', async ({ app: { taskPage } }) => {
     await taskPage.checkDeleteTask('Task 4');
   });
 
@@ -44,7 +70,7 @@ test.describe('Test tasks page', async () => {
     await taskPage.checkTasksFiltered(filtersData, resultData);
   });
 
-  test('drag and drop', async ({ app: { taskPage } }) => {
+  test('Check drag and drop', async ({ app: { taskPage } }) => {
     await taskPage.dragAndDropCard();
   });
 });

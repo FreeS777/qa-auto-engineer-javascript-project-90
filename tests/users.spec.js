@@ -1,5 +1,6 @@
 import { test } from './fixture/main';
 import { BUTTONS } from './data/buttonSelectors';
+import { generateUserData } from './data/generateUserData';
 
 test.describe('Test users page', async () => {
   test.beforeEach(async ({ app: { basePage } }) => {
@@ -15,12 +16,14 @@ test.describe('Test users page', async () => {
       await usersPage.checkCreateUserForm();
     });
     test('Check create new user', async ({ app: { usersPage } }) => {
-      await usersPage.checkCreateUser();
+      const userData = generateUserData();
+      await usersPage.checkCreateUser(userData);
     });
     test('Check create new user with incorrect mail', async ({
       app: { usersPage },
     }) => {
-      await usersPage.checkCreateUserWithIncorrectEmail();
+      const userData = generateUserData();
+      await usersPage.checkCreateUserWithIncorrectEmail(userData);
     });
   });
 
@@ -31,13 +34,16 @@ test.describe('Test users page', async () => {
     test('Check update user data is correct', async ({
       app: { usersPage },
     }) => {
-      await usersPage.checkUpdateUserData();
+      const rowId = 2;
+      const userData = generateUserData();
+      await usersPage.checkUpdateUserData(rowId, userData);
     });
   });
 
   test.describe('Check delete users', async () => {
     test('Delete user is correct', async ({ app: { usersPage } }) => {
-      await usersPage.checkDeleteUser();
+      const userData = ['john@google.com', 'John', 'Doe'];
+      await usersPage.checkDeleteUser(userData);
     });
     test('Check delete all users is correct', async ({
       app: { usersPage },

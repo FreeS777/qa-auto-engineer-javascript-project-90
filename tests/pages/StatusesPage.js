@@ -1,8 +1,7 @@
 import { BUTTONS } from '../data/buttonSelectors';
-import { BaseDataPage } from './BaseDataPage';
-import { generateStatusData } from '../data/generateStatusData';
+import { BasePage } from './BasePage';
 
-export class StatusesPage extends BaseDataPage {
+export class StatusesPage extends BasePage {
   constructor(page) {
     super(page);
   }
@@ -21,8 +20,7 @@ export class StatusesPage extends BaseDataPage {
       this.checkButtonDisabled(BUTTONS.SAVE),
     ]);
   }
-  async checkCreateNewStatus() {
-    const statusData = generateStatusData();
+  async checkCreateNewStatus(statusData) {
     await this.clickButton(BUTTONS.CREATE);
     await this.createStatus(statusData);
     await this.clickButton(BUTTONS.STATUSES);
@@ -39,18 +37,17 @@ export class StatusesPage extends BaseDataPage {
     ]);
   }
 
-  async checkUpdateStatus() {
-    const statusData = generateStatusData();
-    await this.clickRow(4);
+  async checkUpdateStatus(rowId, statusData) {
+    await this.clickRow(rowId);
     await this.createStatus(statusData);
     await this.clickButton(BUTTONS.STATUSES);
-    await this.checkStatusUpdateSuccessfully(4, statusData);
+    await this.checkStatusUpdateSuccessfully(rowId, statusData);
   }
-  async checkDeleteStatus() {
+  async checkDeleteStatus(statusData) {
     await this.clickRow();
     await this.clickButton(BUTTONS.DELETE);
     await this.clickButton(BUTTONS.STATUSES);
-    await this.verifyStatusIsDeleted(['Draft', 'draft']);
+    await this.verifyStatusIsDeleted(statusData);
   }
   async checkDeleteAllStatuses() {
     await this.clickSelectAll();
@@ -60,7 +57,10 @@ export class StatusesPage extends BaseDataPage {
   }
 
   async createStatus(statusData) {
-    await this.fillForm(statusData, [this.nameInput, this.slugInput]);
+    await this.fillInputsForm(statusData, {
+      name: this.nameInput,
+      slug: this.slugInput,
+    });
     await this.clickButton(BUTTONS.SAVE);
   }
   async checkStatusCreatedSuccessfully(statusData) {
@@ -80,7 +80,7 @@ export class StatusesPage extends BaseDataPage {
     });
   }
   async verifyStatusIsDeleted(statusName) {
-    await this.verifyItemIsDeleted(statusName, {
+    await this.checkItemIsDeleted(statusName, {
       name: this.nameCell,
       slug: this.slugCell,
     });

@@ -1,5 +1,6 @@
 import { test } from './fixture/main';
 import { BUTTONS } from './data/buttonSelectors';
+import { generateLabelData } from './data/generateLabelData';
 
 test.describe('Test labels page', async () => {
   test.beforeEach(async ({ app: { basePage } }) => {
@@ -15,7 +16,8 @@ test.describe('Test labels page', async () => {
       await labelsPage.checkCreateLabelsForm();
     });
     test('Create new label correctly', async ({ app: { labelsPage } }) => {
-      await labelsPage.checkCreateNewLabel();
+      const labelData = generateLabelData();
+      await labelsPage.checkCreateNewLabel(labelData);
     });
   });
 
@@ -28,13 +30,16 @@ test.describe('Test labels page', async () => {
     test('Update label data and check success', async ({
       app: { labelsPage },
     }) => {
-      await labelsPage.checkUpdateLabel();
+      const rowId = 4;
+      const labelData = generateLabelData();
+      await labelsPage.checkUpdateLabel(rowId, labelData);
     });
   });
 
   test.describe('Check delete labels page', async () => {
     test('delete label and check success', async ({ app: { labelsPage } }) => {
-      await labelsPage.checkDeleteLabel();
+      const label = ['bug'];
+      await labelsPage.checkDeleteLabel(label);
     });
     test('delete all labels and check success', async ({
       app: { labelsPage },

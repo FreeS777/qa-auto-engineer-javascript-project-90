@@ -1,10 +1,9 @@
-import { BaseTasksPage } from './BaseTasksPage';
 import { BUTTONS } from '../data/buttonSelectors';
-import { generateTaskData } from '../data/generateTaskData';
 import { expect } from '@playwright/test';
 import { TaskCard } from '../components/TaskCard';
+import { BasePage } from './BasePage';
 
-export class TaskPage extends BaseTasksPage {
+export class TaskPage extends BasePage {
   constructor(page) {
     super(page);
     this.taskAssigneeSelect = this.page.getByLabel('Assignee');
@@ -15,7 +14,7 @@ export class TaskPage extends BaseTasksPage {
   }
 
   async getVisibleTasks() {
-    const cards = await this.page.locator('.MuiCard-root').all();
+    const cards = await this.taskCard.all();
     const tasks = await Promise.all(
       cards.map(async (card) => {
         const taskCard = new TaskCard(card);
@@ -28,28 +27,46 @@ export class TaskPage extends BaseTasksPage {
   }
 
   async addFilters(data) {
-    await this.fillSelectOption('Assignee', data.assignee);
-    await this.fillSelectOption('Status', data.status);
-    await this.fillSelectOption('Label', data.label);
+    await this.fillSelectOption({ label: 'Assignee', value: data.assignee });
+    await this.fillSelectOption({ label: 'Status', value: data.status });
+    await this.fillSelectOption({ label: 'Label', value: data.label });
   }
 
-  async createTask(taskData) {
-    await this.fillSelectOption('Assignee', 'alice@hotmail.com');
-    await this.fillForm(taskData, [this.taskTitleInput, this.taskContentInput]);
-    await this.fillSelectOption('Status', 'To Publish');
-    await this.fillSelectOption('Label', ['critical', 'task']);
-
+  async createTask(
+    taskInputsData,
+    assigneeOptions,
+    statusOptions,
+    labelOptions,
+  ) {
+    await this.fillSelectOption(assigneeOptions);
+    await this.fillInputsForm(taskInputsData, {
+      title: this.taskTitleInput,
+      content: this.taskContentInput,
+    });
+    await this.fillSelectOption(statusOptions);
+    await this.fillSelectOption(labelOptions);
     await this.clickButton(BUTTONS.SAVE);
   }
 
-  async checkCreateTask() {
+  async checkCreateTask(
+    taskInputsData,
+    assigneeOptions,
+    statusOptions,
+    labelOptions,
+  ) {
     await this.clickButton(BUTTONS.CREATE);
-    const taskData = generateTaskData();
-    await this.createTask(taskData);
+    await this.createTask(
+      taskInputsData,
+      assigneeOptions,
+      statusOptions,
+      labelOptions,
+    );
     await this.clickButton(BUTTONS.TASKS);
-    const { title, content } = taskData;
-    await this.checkTaskCreatedSuccess(title, content);
-    await this.checkTaskInColumn(taskData.title, taskData.content);
+    await this.checkTaskCreatedSuccess(
+      taskInputsData.title,
+      taskInputsData.content,
+    );
+    await this.checkTaskInColumn(taskInputsData.title, taskInputsData.content);
   }
 
   async checkTaskCreatedSuccess(title, content) {
@@ -77,7 +94,7 @@ export class TaskPage extends BaseTasksPage {
 
   async checkTasksTitles() {
     await this.clickButton(BUTTONS.STATUSES);
-    const titles = await this.getNames();
+    const titles = await this.getColumnData(this.nameCell);
     await this.clickButton(BUTTONS.TASKS);
     const taskTitles = await this.titles.all();
     for (const task of taskTitles) {
@@ -94,17 +111,18 @@ export class TaskPage extends BaseTasksPage {
     }
   }
 
-  async checkEditTask(taskName, assignee, status, label) {
+  async checkEditTask(taskName, taskInputs, assignee, status, label) {
     await this.clickEditTask(taskName);
-    await this.fillSelectOption('Assignee', assignee);
-    const taskData = generateTaskData();
-    await this.fillForm(taskData, [this.taskTitleInput, this.taskContentInput]);
-    await this.fillSelectOption('Status', status);
-    await this.fillSelectOption('Label', label);
-
+    await this.fillSelectOption({ label: 'Assignee', value: assignee });
+    await this.fillInputsForm(taskInputs, {
+      title: this.taskTitleInput,
+      content: this.taskContentInput,
+    });
+    await this.fillSelectOption({ label: 'Status', value: status });
+    await this.fillSelectOption({ label: 'Label', value: label });
     await this.clickButton(BUTTONS.SAVE);
     await this.clickButton(BUTTONS.TASKS);
-    await this.checkTaskInColumn(taskData.title, taskData.status);
+    await this.checkTaskInColumn(taskInputs.title, taskInputs.status);
   }
 
   async checkTaskInColumn(taskName, status) {

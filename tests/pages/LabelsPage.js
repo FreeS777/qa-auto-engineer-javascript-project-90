@@ -1,8 +1,7 @@
 import { BUTTONS } from '../data/buttonSelectors';
-import { BaseDataPage } from './BaseDataPage';
-import { generateLabelData } from '../data/generateLabelData';
+import { BasePage } from './BasePage';
 
-export class LabelsPage extends BaseDataPage {
+export class LabelsPage extends BasePage {
   constructor(page) {
     super(page);
   }
@@ -21,8 +20,7 @@ export class LabelsPage extends BaseDataPage {
     ]);
   }
 
-  async checkCreateNewLabel() {
-    const labelData = generateLabelData();
+  async checkCreateNewLabel(labelData) {
     await this.clickButton(BUTTONS.CREATE);
     await this.createLabel(labelData);
     await this.clickButton(BUTTONS.LABELS);
@@ -40,19 +38,18 @@ export class LabelsPage extends BaseDataPage {
     ]);
   }
 
-  async checkUpdateLabel() {
-    const labelData = generateLabelData();
-    await this.clickRow(4);
+  async checkUpdateLabel(rowId, labelData) {
+    await this.clickRow(rowId);
     await this.createLabel(labelData);
     await this.clickButton(BUTTONS.LABELS);
-    await this.checkLabelUpdateSuccessfully(4, labelData);
+    await this.checkLabelUpdateSuccessfully(rowId, labelData);
   }
 
-  async checkDeleteLabel() {
+  async checkDeleteLabel(label) {
     await this.clickRow();
     await this.clickButton(BUTTONS.DELETE);
     await this.clickButton(BUTTONS.STATUSES);
-    await this.verifyLabelIsDeleted(['bug']);
+    await this.checkLabelIsDeleted(label);
   }
 
   async checkDeleteAllLabels() {
@@ -63,7 +60,7 @@ export class LabelsPage extends BaseDataPage {
   }
 
   async createLabel(label) {
-    await this.fillForm(label, [this.nameInput]);
+    await this.fillInputsForm(label, { name: this.nameInput });
     await this.clickButton(BUTTONS.SAVE);
   }
   async checkLabelCreatedSuccessfully(label) {
@@ -80,8 +77,8 @@ export class LabelsPage extends BaseDataPage {
       name: this.nameCell,
     });
   }
-  async verifyLabelIsDeleted(labelName) {
-    await this.verifyItemIsDeleted(labelName, {
+  async checkLabelIsDeleted(labelName) {
+    await this.checkItemIsDeleted(labelName, {
       name: this.nameCell,
     });
   }

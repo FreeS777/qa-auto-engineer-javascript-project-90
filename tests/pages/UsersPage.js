@@ -1,9 +1,8 @@
 import { expect } from '@playwright/test';
 import { BUTTONS } from '../data/buttonSelectors';
-import { BaseDataPage } from './BaseDataPage';
-import { generateUserData } from '../data/generateUserData';
+import { BasePage } from './BasePage';
 
-export class UsersPage extends BaseDataPage {
+export class UsersPage extends BasePage {
   constructor(page) {
     super(page);
   }
@@ -17,18 +16,16 @@ export class UsersPage extends BaseDataPage {
     ]);
   }
 
-  async checkCreateUser() {
-    const userRegData = generateUserData();
+  async checkCreateUser(userData) {
     await this.clickButton(BUTTONS.CREATE);
-    await this.createUser(userRegData);
+    await this.createUser(userData);
     await this.clickButton(BUTTONS.USERS);
-    await this.checkUserCreatedSuccessfully(userRegData);
+    await this.checkUserCreatedSuccessfully(userData);
   }
 
-  async checkCreateUserWithIncorrectEmail() {
-    const userRegData = generateUserData();
+  async checkCreateUserWithIncorrectEmail(userData) {
     await this.clickButton(BUTTONS.CREATE);
-    await this.createUserWithIncorrectEmail(userRegData);
+    await this.createUserWithIncorrectEmail(userData);
     await this.clickButton(BUTTONS.USERS);
   }
 
@@ -43,20 +40,19 @@ export class UsersPage extends BaseDataPage {
     ]);
   }
 
-  async checkUpdateUserData() {
-    const userRegData = generateUserData();
+  async checkUpdateUserData(rowId, userData) {
     await this.clickButton(BUTTONS.USERS);
-    await this.clickRow(2);
-    await this.createUser(userRegData);
+    await this.clickRow(rowId);
+    await this.createUser(userData);
     await this.clickButton(BUTTONS.USERS);
-    await this.checkUserUpdateSuccessfully(2, userRegData);
+    await this.checkUserUpdateSuccessfully(rowId, userData);
   }
 
-  async checkDeleteUser() {
+  async checkDeleteUser(userData) {
     await this.clickRow();
     await this.clickButton(BUTTONS.DELETE);
     await this.clickButton(BUTTONS.USERS);
-    await this.verifyUserIsDeleted(['john@google.com', 'John', 'Doe']);
+    await this.checkUserIsDeleted(userData);
   }
 
   async checkDeleteAllUser() {
@@ -78,27 +74,27 @@ export class UsersPage extends BaseDataPage {
         this.checkButtonDisabled(BUTTONS.SAVE),
       ]);
   }
-  async createUser(userRegData) {
-    await this.fillForm(userRegData, [
-      this.emailInput,
-      this.firstNameInput,
-      this.lastNameInput,
-    ]);
+  async createUser(userData) {
+    await this.fillInputsForm(userData, {
+      email: this.emailInput,
+      firstName: this.firstNameInput,
+      lastName: this.lastNameInput,
+    });
     await this.clickButton(BUTTONS.SAVE);
   }
-  async createUserWithIncorrectEmail(userRegData) {
-    const incorrectData = { ...userRegData, email: 'qwerty' };
-    await this.fillForm(incorrectData, [
-      this.emailInput,
-      this.firstNameInput,
-      this.lastNameInput,
-    ]);
+  async createUserWithIncorrectEmail(userData) {
+    const incorrectData = { ...userData, email: 'qwerty' };
+    await this.fillInputsForm(incorrectData, {
+      email: this.emailInput,
+      firstName: this.firstNameInput,
+      lastName: this.lastNameInput,
+    });
     await this.clickButton(BUTTONS.SAVE);
     await expect(this.alert).toBeVisible();
   }
 
-  async checkUserCreatedSuccessfully(userRegData) {
-    await this.checkItemCreatedSuccessfully(userRegData, {
+  async checkUserCreatedSuccessfully(userData) {
+    await this.checkItemCreatedSuccessfully(userData, {
       email: this.emailCell,
       firstName: this.firstNameCell,
       lastName: this.lastNameCell,
@@ -112,16 +108,16 @@ export class UsersPage extends BaseDataPage {
     ]);
   }
 
-  async checkUserUpdateSuccessfully(id, userRegData) {
-    await this.checkItemUpdateSuccessfully(id, userRegData, {
+  async checkUserUpdateSuccessfully(id, userData) {
+    await this.checkItemUpdateSuccessfully(id, userData, {
       email: this.emailCell,
       firstName: this.firstNameCell,
       lastName: this.lastNameCell,
     });
   }
 
-  async verifyUserIsDeleted(userData) {
-    await this.verifyItemIsDeleted(userData, {
+  async checkUserIsDeleted(userData) {
+    await this.checkItemIsDeleted(userData, {
       email: this.emailCell,
       firstName: this.firstNameCell,
       lastName: this.lastNameCell,
