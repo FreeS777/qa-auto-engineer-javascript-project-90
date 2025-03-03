@@ -1,8 +1,34 @@
-# React + Vite
+### Hexlet tests and linter status:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Actions Status](https://github.com/FreeS777/qa-auto-engineer-javascript-project-90/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/FreeS777/qa-auto-engineer-javascript-project-90/actions)
 
-Currently, two official plugins are available:
+## Project Description
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is an automated test suite for a Kanban board application built with **react-admin**, using **Playwright**. The tests verify the main functionalities: creating, editing, deleting, and moving tasks, as well as user authentication.
+
+### Key Features:
+
+- **Task Management** – create, edit, delete, change task statuses ("draft", "in progress", "done").
+- **Users** – create and view users (for admins).
+- **Labels** – create and edit labels for tasks ("bug", "feature", etc.).
+- **Task Statuses** – configure columns on the Kanban board.
+
+## Installation and Setup
+
+### Install dependencies:
+
+```
+npm ci
+```
+
+### Run the application:
+
+```
+npm run dev
+```
+
+### Run tests:
+
+```
+npm test
+```
