@@ -47,7 +47,7 @@ export class StatusesPage extends BasePage {
     await this.clickRow();
     await this.clickButton(BUTTONS.DELETE);
     await this.clickButton(BUTTONS.STATUSES);
-    await this.verifyStatusIsDeleted(statusData);
+    await this.checkStatusIsDeleted(statusData);
   }
   async checkDeleteAllStatuses() {
     await this.clickSelectAll();
@@ -79,7 +79,7 @@ export class StatusesPage extends BasePage {
       slug: this.slugCell,
     });
   }
-  async verifyStatusIsDeleted(statusName) {
+  async checkStatusIsDeleted(statusName) {
     await this.checkItemIsDeleted(statusName, {
       name: this.nameCell,
       slug: this.slugCell,
