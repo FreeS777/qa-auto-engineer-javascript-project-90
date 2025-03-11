@@ -1,4 +1,3 @@
-import { BUTTONS } from '../data/buttonSelectors';
 import { expect } from '@playwright/test';
 import { TaskCard } from '../components/TaskCard';
 import { BasePage } from './BasePage';
@@ -6,11 +5,24 @@ import { BasePage } from './BasePage';
 export class TaskPage extends BasePage {
   constructor(page) {
     super(page);
-    this.taskAssigneeSelect = this.page.getByLabel('Assignee');
     this.taskTitleInput = this.page.getByRole('textbox', { name: 'Title' });
     this.taskContentInput = this.page.getByRole('textbox', { name: 'Content' });
-    this.taskStatusSelect = this.page.getByRole('textbox', { name: 'Status' });
-    this.taskLabelSelect = this.page.getByRole('textbox', { name: 'Label' });
+    this.taskTable = this.page.locator('.RaList-content');
+    this.taskCard = this.page.locator('.MuiCard-root');
+    this.filters = this.page.locator('.filter-filed');
+    this.titles = this.page.locator('.RaList-content h6');
+    this.taskCells = this.page.locator('.MuiBox-root.css-1xphtog');
+    this.elements = this.page.locator('[data-rfd-draggable-id]');
+    this.clearValue = this.page.locator('[aria-label="Clear value"]');
+    this.options = this.page.locator('ul[role="listbox"] li[role="option"]');
+  }
+
+  get exportButton() {
+    return this.page.getByRole('button', { name: 'Export' });
+  }
+
+  get tasksMenuItem() {
+    return this.page.getByRole('menuitem', { name: 'Tasks' });
   }
 
   async getVisibleTasks() {
@@ -24,6 +36,24 @@ export class TaskPage extends BasePage {
       }),
     );
     return tasks;
+  }
+
+  async fillSelectOption({ label, value }) {
+    await this.page.getByLabel(label).click();
+
+    if (!value) {
+      await this.clearValue.click();
+    } else {
+      const options = this.options;
+      const values = Array.isArray(value) ? value : [value];
+
+      for (const item of values) {
+        const option = options.locator(`text=${item}`);
+        await option.click();
+      }
+    }
+
+    await this.page.keyboard.press('Escape');
   }
 
   async addFilters(data) {
@@ -45,7 +75,7 @@ export class TaskPage extends BasePage {
     });
     await this.fillSelectOption(statusOptions);
     await this.fillSelectOption(labelOptions);
-    await this.clickButton(BUTTONS.SAVE);
+    await this.saveButton.click();
   }
 
   async checkCreateTask(
@@ -54,14 +84,14 @@ export class TaskPage extends BasePage {
     statusOptions,
     labelOptions,
   ) {
-    await this.clickButton(BUTTONS.CREATE);
+    await this.createButton.click();
     await this.createTask(
       taskInputsData,
       assigneeOptions,
       statusOptions,
       labelOptions,
     );
-    await this.clickButton(BUTTONS.TASKS);
+    await this.tasksMenuItem.click();
     await this.checkTaskCreatedSuccess(
       taskInputsData.title,
       taskInputsData.content,
@@ -81,21 +111,25 @@ export class TaskPage extends BasePage {
       this.checkTasksData(),
       this.checkTasksTitles(),
       this.checkTasksFilters(),
-      this.checkButtonVisible(BUTTONS.CREATE),
-      this.checkButtonVisible(BUTTONS.EXPORT),
+      this.checkButtonVisible(this.createButton),
+      this.checkButtonVisible(this.exportButton),
     ]);
   }
   async checkTasksFilters() {
-    const filters = await this.filtres.all();
+    const filters = await this.filters.all();
     for (const filter of filters) {
       await expect(filter).toBeVisible();
     }
   }
 
+  async getColumnData(locator) {
+    return await locator.allTextContents();
+  }
+
   async checkTasksTitles() {
-    await this.clickButton(BUTTONS.STATUSES);
+    await this.statusesMenuItem.click();
     const titles = await this.getColumnData(this.nameCell);
-    await this.clickButton(BUTTONS.TASKS);
+    await this.tasksMenuItem.click();
     const taskTitles = await this.titles.all();
     for (const task of taskTitles) {
       await expect(task).toBeVisible();
@@ -120,8 +154,8 @@ export class TaskPage extends BasePage {
     });
     await this.fillSelectOption({ label: 'Status', value: status });
     await this.fillSelectOption({ label: 'Label', value: label });
-    await this.clickButton(BUTTONS.SAVE);
-    await this.clickButton(BUTTONS.TASKS);
+    await this.saveButton.click();
+    await this.tasksMenuItem.click();
     await this.checkTaskInColumn(taskInputs.title, taskInputs.status);
   }
 
@@ -135,7 +169,7 @@ export class TaskPage extends BasePage {
     const task = this.taskTable.filter({ hasText: taskTitle });
     await expect(task).toBeVisible();
     await this.clickEditTask(taskTitle);
-    await this.clickButton(BUTTONS.DELETE);
+    await this.deleteButton.click();
     await expect(task).not.toBeVisible();
   }
 
@@ -170,5 +204,17 @@ export class TaskPage extends BasePage {
     await expect(
       droppable.locator(`[data-rfd-draggable-id="${taskId}"]`),
     ).toBeVisible();
+  }
+
+  async clickEditTask(taskTitle) {
+    const task = this.taskCard.filter({ hasText: `${taskTitle}` });
+    const editButton = task.getByRole('link', { name: 'Edit' });
+    await editButton.click();
+  }
+
+  async clickShowTask(taskTitle) {
+    const task = this.taskCard.filter({ hasText: `${taskTitle}` });
+    const showButton = task.getByRole('link', { name: 'Show' });
+    await showButton.click();
   }
 }

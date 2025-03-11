@@ -1,10 +1,9 @@
 import { test } from './fixture/main';
-import { BUTTONS } from './data/buttonSelectors';
 import { generateTaskInputs } from './data/generateTaskData';
 
 test.describe('Test tasks page', async () => {
-  test.beforeEach(async ({ app: { basePage } }) => {
-    await basePage.clickButton(BUTTONS.TASKS);
+  test.beforeEach(async ({ app: { taskPage } }) => {
+    await taskPage.tasksMenuItem.click();
   });
 
   test('Check tasks page is visible', async ({ app: { taskPage } }) => {

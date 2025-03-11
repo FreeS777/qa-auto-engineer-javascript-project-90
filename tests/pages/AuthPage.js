@@ -1,8 +1,7 @@
-import { BasePage } from './BasePage';
 import { expect } from '@playwright/test';
-import { BUTTONS } from '../data/buttonSelectors';
+import { PageHolder } from './PageHolder';
 
-export class AuthPage extends BasePage {
+export class AuthPage extends PageHolder {
   constructor(page) {
     super(page);
     this.loginForm = this.page.locator('.RaLogin-card');
@@ -12,12 +11,24 @@ export class AuthPage extends BasePage {
     this.LoginFormPassword = this.page.getByRole('textbox', {
       name: 'password',
     });
-    this.signInBtn = this.page.getByRole('button', { name: 'Sign in' });
     this.welcome = this.page.getByRole('heading', {
       name: 'Welcome to the administration',
     });
     this.url = 'http://localhost:5173';
   }
+
+  get signInBtn() {
+    return this.page.getByRole('button', { name: 'Sign in' });
+  }
+
+  get profileButton() {
+    return this.page.getByRole('button', { name: 'Profile' });
+  }
+
+  get logoutButton() {
+    return this.page.getByRole('menuitem', { name: 'Logout' });
+  }
+
   async checkLoginFormVisible() {
     await expect(this.loginForm).toBeVisible();
   }
@@ -37,8 +48,8 @@ export class AuthPage extends BasePage {
   }
 
   async logOut() {
-    await this.clickButton(BUTTONS.PROFILE);
-    await this.clickButton(BUTTONS.LOGOUT);
+    await this.profileButton.click();
+    await this.logoutButton.click();
   }
   async open() {
     await this.page.goto(this.url);

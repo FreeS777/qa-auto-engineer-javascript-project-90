@@ -1,10 +1,24 @@
 import { expect } from '@playwright/test';
-import { BUTTONS } from '../data/buttonSelectors';
 import { BasePage } from './BasePage';
 
 export class UsersPage extends BasePage {
   constructor(page) {
     super(page);
+    this.emailInput = this.page.getByRole('textbox', { name: 'Email' });
+    this.firstNameInput = this.page.getByRole('textbox', {
+      name: 'First name',
+    });
+    this.lastNameInput = this.page.getByRole('textbox', { name: 'Last name' });
+    this.emailCell = this.page.locator('tbody .column-email');
+    this.firstNameCell = this.page.locator('tbody .column-firstName');
+    this.lastNameCell = this.page.locator('tbody .column-lastName');
+    this.alert = this.page.getByText(
+      'The form is not valid. Please check for errors',
+    );
+  }
+
+  get usersMenuButton() {
+    return this.page.getByRole('menuitem', { name: 'Users' });
   }
 
   async checkUsersData() {
@@ -17,62 +31,62 @@ export class UsersPage extends BasePage {
   }
 
   async checkCreateUser(userData) {
-    await this.clickButton(BUTTONS.CREATE);
+    await this.createButton.click();
     await this.createUser(userData);
-    await this.clickButton(BUTTONS.USERS);
+    await this.usersMenuButton.click();
     await this.checkUserCreatedSuccessfully(userData);
   }
 
   async checkCreateUserWithIncorrectEmail(userData) {
-    await this.clickButton(BUTTONS.CREATE);
+    await this.createButton.click();
     await this.createUserWithIncorrectEmail(userData);
-    await this.clickButton(BUTTONS.USERS);
+    await this.usersMenuButton.click();
   }
 
   async checkEditUserPage() {
     await this.clickRow();
     await Promise.all([
       this.checkEditUserForm(),
-      this.checkButtonVisible(BUTTONS.SAVE),
-      this.checkButtonDisabled(BUTTONS.SAVE),
-      this.checkButtonVisible(BUTTONS.DELETE),
-      this.checkButtonVisible(BUTTONS.SHOW),
+      this.checkButtonVisible(this.saveButton),
+      this.checkButtonDisabled(this.saveButton),
+      this.checkButtonVisible(this.deleteButton),
+      this.checkButtonVisible(this.showButton),
     ]);
   }
 
   async checkUpdateUserData(rowId, userData) {
-    await this.clickButton(BUTTONS.USERS);
+    await this.usersMenuButton.click();
     await this.clickRow(rowId);
     await this.createUser(userData);
-    await this.clickButton(BUTTONS.USERS);
+    await this.usersMenuButton.click();
     await this.checkUserUpdateSuccessfully(rowId, userData);
   }
 
   async checkDeleteUser(userData) {
     await this.clickRow();
-    await this.clickButton(BUTTONS.DELETE);
-    await this.clickButton(BUTTONS.USERS);
+    await this.deleteButton.click();
+    await this.usersMenuButton.click();
     await this.checkUserIsDeleted(userData);
   }
 
   async checkDeleteAllUser() {
     await this.clickSelectAll();
     await this.allItemsSelectedCorrectly();
-    await this.clickButton(BUTTONS.DELETE);
+    await this.deleteButton.click();
     await this.checkAllItemsDeleted();
   }
 
   async checkCreateUserForm() {
-    await this.clickButton(BUTTONS.CREATE),
-      await Promise.all([
-        this.checkForm([
-          this.emailInput,
-          this.firstNameInput,
-          this.lastNameInput,
-        ]),
-        this.checkButtonVisible(BUTTONS.SAVE),
-        this.checkButtonDisabled(BUTTONS.SAVE),
-      ]);
+    await this.createButton.click();
+    await Promise.all([
+      this.checkForm([
+        this.emailInput,
+        this.firstNameInput,
+        this.lastNameInput,
+      ]),
+      this.checkButtonVisible(this.saveButton),
+      this.checkButtonDisabled(this.saveButton),
+    ]);
   }
   async createUser(userData) {
     await this.fillInputsForm(userData, {
@@ -80,7 +94,7 @@ export class UsersPage extends BasePage {
       firstName: this.firstNameInput,
       lastName: this.lastNameInput,
     });
-    await this.clickButton(BUTTONS.SAVE);
+    await this.saveButton.click();
   }
   async createUserWithIncorrectEmail(userData) {
     const incorrectData = { ...userData, email: 'qwerty' };
@@ -89,7 +103,7 @@ export class UsersPage extends BasePage {
       firstName: this.firstNameInput,
       lastName: this.lastNameInput,
     });
-    await this.clickButton(BUTTONS.SAVE);
+    await this.saveButton.click();
     await expect(this.alert).toBeVisible();
   }
 

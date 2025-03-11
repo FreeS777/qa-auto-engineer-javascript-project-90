@@ -1,10 +1,9 @@
 import { test } from './fixture/main';
-import { BUTTONS } from './data/buttonSelectors';
 import { generateStatusData } from './data/generateStatusData';
 
 test.describe('Test statuses page', async () => {
   test.beforeEach(async ({ app: { basePage } }) => {
-    await basePage.clickButton(BUTTONS.STATUSES);
+    await basePage.statusesMenuItem.click();
   });
 
   test('Check statuses data is visible', async ({ app: { statusesPage } }) => {

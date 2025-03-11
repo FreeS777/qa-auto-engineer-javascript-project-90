@@ -1,10 +1,9 @@
 import { test } from './fixture/main';
-import { BUTTONS } from './data/buttonSelectors';
 import { generateLabelData } from './data/generateLabelData';
 
 test.describe('Test labels page', async () => {
-  test.beforeEach(async ({ app: { basePage } }) => {
-    await basePage.clickButton(BUTTONS.LABELS);
+  test.beforeEach(async ({ app: { labelsPage } }) => {
+    await labelsPage.labelsMenuItem.click();
   });
 
   test('Labels page is visible', async ({ app: { labelsPage } }) => {

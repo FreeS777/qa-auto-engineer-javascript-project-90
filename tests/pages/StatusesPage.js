@@ -1,9 +1,10 @@
-import { BUTTONS } from '../data/buttonSelectors';
 import { BasePage } from './BasePage';
 
 export class StatusesPage extends BasePage {
   constructor(page) {
     super(page);
+    this.slugCell = this.page.locator('tbody .column-slug');
+    this.slugInput = this.page.getByRole('textbox', { name: 'slug' });
   }
 
   async checkStatusesData() {
@@ -13,46 +14,46 @@ export class StatusesPage extends BasePage {
   }
 
   async checkCreateStatusForm() {
-    await this.clickButton(BUTTONS.CREATE);
+    await this.createButton.click();
     await Promise.all([
       this.checkForm([this.nameInput, this.slugInput]),
-      this.checkButtonVisible(BUTTONS.SAVE),
-      this.checkButtonDisabled(BUTTONS.SAVE),
+      this.checkButtonVisible(this.saveButton),
+      this.checkButtonDisabled(this.saveButton),
     ]);
   }
   async checkCreateNewStatus(statusData) {
-    await this.clickButton(BUTTONS.CREATE);
+    await this.createButton.click();
     await this.createStatus(statusData);
-    await this.clickButton(BUTTONS.STATUSES);
+    await this.statusesMenuItem.click();
     await this.checkStatusCreatedSuccessfully(statusData);
   }
   async checkEditStatusPage() {
     await this.clickRow();
     await Promise.all([
       this.checkEditStatusForm(),
-      this.checkButtonVisible(BUTTONS.SAVE),
-      this.checkButtonDisabled(BUTTONS.SAVE),
-      this.checkButtonVisible(BUTTONS.DELETE),
-      this.checkButtonVisible(BUTTONS.SHOW),
+      this.checkButtonVisible(this.saveButton),
+      this.checkButtonDisabled(this.saveButton),
+      this.checkButtonVisible(this.deleteButton),
+      this.checkButtonVisible(this.showButton),
     ]);
   }
 
   async checkUpdateStatus(rowId, statusData) {
     await this.clickRow(rowId);
     await this.createStatus(statusData);
-    await this.clickButton(BUTTONS.STATUSES);
+    await this.statusesMenuItem.click();
     await this.checkStatusUpdateSuccessfully(rowId, statusData);
   }
   async checkDeleteStatus(statusData) {
     await this.clickRow();
-    await this.clickButton(BUTTONS.DELETE);
-    await this.clickButton(BUTTONS.STATUSES);
+    await this.deleteButton.click();
+    await this.statusesMenuItem.click();
     await this.checkStatusIsDeleted(statusData);
   }
   async checkDeleteAllStatuses() {
     await this.clickSelectAll();
     await this.allItemsSelectedCorrectly();
-    await this.clickButton(BUTTONS.DELETE);
+    await this.deleteButton.click();
     await this.checkAllItemsDeleted();
   }
 
@@ -61,7 +62,7 @@ export class StatusesPage extends BasePage {
       name: this.nameInput,
       slug: this.slugInput,
     });
-    await this.clickButton(BUTTONS.SAVE);
+    await this.saveButton.click();
   }
   async checkStatusCreatedSuccessfully(statusData) {
     await this.checkItemCreatedSuccessfully(statusData, {

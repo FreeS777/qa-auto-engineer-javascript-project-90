@@ -1,10 +1,9 @@
 import { test } from './fixture/main';
-import { BUTTONS } from './data/buttonSelectors';
 import { generateUserData } from './data/generateUserData';
 
 test.describe('Test users page', async () => {
-  test.beforeEach(async ({ app: { basePage } }) => {
-    await basePage.clickButton(BUTTONS.USERS);
+  test.beforeEach(async ({ app: { usersPage } }) => {
+    await usersPage.usersMenuButton.click();
   });
 
   test('Users data is displayed correctly', async ({ app: { usersPage } }) => {

@@ -9,11 +9,29 @@ import { TaskPage } from './TaskPage';
 export class Application extends PageHolder {
   constructor(page) {
     super(page);
-    this.basePage = new BasePage(page);
-    this.authPage = new AuthPage(page);
-    this.usersPage = new UsersPage(page);
-    this.statusesPage = new StatusesPage(page);
-    this.labelsPage = new LabelsPage(page);
-    this.taskPage = new TaskPage(page);
+  }
+
+  get basePage() {
+    return new BasePage(this.page);
+  }
+
+  get authPage() {
+    return new AuthPage(this.page);
+  }
+
+  get usersPage() {
+    return new UsersPage(this.page);
+  }
+
+  get statusesPage() {
+    return new StatusesPage(this.page);
+  }
+
+  get labelsPage() {
+    return new LabelsPage(this.page);
+  }
+
+  get taskPage() {
+    return new TaskPage(this.page);
   }
 }
