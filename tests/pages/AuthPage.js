@@ -5,6 +5,7 @@ export class AuthPage extends PageHolder {
   constructor(page) {
     super(page);
     this.loginForm = this.page.locator('.RaLogin-card');
+    this.icon = this.page.locator('.RaLogin-icon');
     this.LoginFormUserName = this.page.getByRole('textbox', {
       name: 'userName',
     });
@@ -29,8 +30,16 @@ export class AuthPage extends PageHolder {
     return this.page.getByRole('menuitem', { name: 'Logout' });
   }
 
+  async open() {
+    await this.page.goto(this.url);
+  }
+
   async checkLoginFormVisible() {
     await expect(this.loginForm).toBeVisible();
+  }
+
+  async checkRegFormIcon() {
+    await expect(this.icon).toBeVisible();
   }
   async checkLoginUserNameVisible() {
     await expect(this.LoginFormUserName).toBeVisible();
@@ -41,22 +50,23 @@ export class AuthPage extends PageHolder {
   async checkSignInBtnVisible() {
     await expect(this.signInBtn).toBeVisible();
   }
+  async checkUrl() {
+    await expect(this.page).toHaveURL('/#/');
+  }
+
+  async checkRegistrationForm() {
+    await this.checkLoginFormVisible();
+    await this.checkLoginUserNameVisible();
+    await this.checkLoginPasswordVisible();
+    await this.checkSignInBtnVisible();
+    await this.checkRegFormIcon();
+  }
   async logIn() {
     await this.LoginFormUserName.fill('TestUser');
     await this.LoginFormPassword.fill('12345');
     await this.signInBtn.click();
   }
 
-  async logOut() {
-    await this.profileButton.click();
-    await this.logoutButton.click();
-  }
-  async open() {
-    await this.page.goto(this.url);
-  }
-  async checkUrl() {
-    await expect(this.page).toHaveURL('/#/');
-  }
   async checkWelcomeText() {
     await expect(this.welcome).toBeVisible();
   }
@@ -67,5 +77,10 @@ export class AuthPage extends PageHolder {
     await this.checkUrl();
     await this.checkWelcomeText();
     await this.checkAdminName();
+  }
+  async logOut() {
+    await this.profileButton.click();
+    await this.logoutButton.click();
+    await expect(this.signInBtn).toBeVisible();
   }
 }

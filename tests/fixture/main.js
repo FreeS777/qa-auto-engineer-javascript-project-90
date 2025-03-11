@@ -6,10 +6,7 @@ const test = base.extend({
     const app = new Application(page);
 
     await app.authPage.open();
-    await app.authPage.checkLoginFormVisible();
-    await app.authPage.checkLoginUserNameVisible();
-    await app.authPage.checkLoginPasswordVisible();
-    await app.authPage.checkSignInBtnVisible();
+    await app.authPage.checkRegistrationForm();
     await app.authPage.logIn();
 
     await use(app);
